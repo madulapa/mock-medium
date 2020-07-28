@@ -1,0 +1,12 @@
+{
+    "DB" : {
+        "URL" : "mongodb+srv://mock-medium-user:mock-medium-pass@mock-medium.8ffwm.mongodb.net/mock-medium?retryWrites=true&w=majority",
+        "options" : {
+            "useNewUrlParser": true,
+            "useUnifiedTopology": true
+        }
+    },
+    "app": {
+        "PORT": 3000
+    }
+}
