@@ -1,17 +1,19 @@
 //UserModel = require('../models/user.model')
 PostModel = require('../models/post.model')
 const express = require('express');
+const logger = require('log4js').getLogger(); 
 const { body, validationResult } = require('express-validator/check');
 const router = express.Router();
 /**
  * User can make a post
  */
-router.post('/post', body("title").exists(), body("body").exists(), async (req, res) => {
+router.post('/', body("title").exists(), body("body").exists(), async (req, res) => {
     
     const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
 
     if (!errors.isEmpty()) {
         res.status(422).json({ errors: errors.array() });
+        logger.error('post post:', errors)
       return;
     }
     const {title, body} = req.body;
@@ -30,8 +32,9 @@ router.post('/post', body("title").exists(), body("body").exists(), async (req, 
    /**
    * User can delete a post
    */
-  router.delete('/post/:id', async (req, res) => {
+  router.delete('/:id', async (req, res) => {
     let post = await getPostbyId(req.params.id)
+    
     if(post == null)
         return res.status(400).json({error: "Post does not exist"});
     try {
@@ -39,13 +42,14 @@ router.post('/post', body("title").exists(), body("body").exists(), async (req, 
     return res.json({message: "successfully deleted post"})
   }
   catch (err) {
+    logger.error('delete post', err)
     return res.status(500).json(err)
   }
   })
    /**
    * User can update a post
    */
-  router.patch('/post/:id', async (req, res) => {
+  router.patch('/:id', async (req, res) => {
     let post = await getPostbyId(req.params.id)
     if(post == null)
         return res.status(400).json({error: "Post does not exist"});
@@ -60,6 +64,7 @@ router.post('/post', body("title").exists(), body("body").exists(), async (req, 
         return res.json(updatedPost)
     }
     catch (err) {
+      logger.error('patch post', err)
         return res.status(400).json(err)
     }
   })
@@ -68,19 +73,20 @@ router.post('/post', body("title").exists(), body("body").exists(), async (req, 
    */
   router.get('/feed', async (req, res) => {
     console.log(req.query);
-    const {limit = 10, skip = 0} = req.query;
+    const {limit = 3, skip = 0} = req.query;
     try {
         const posts = await PostModel.find({}).limit(limit).skip(skip);
         return res.json(posts);
     }
     catch(err) {
+      logger.error('get feed', err)
         return res.status(500).json(err)
     }
   })
   /**
  * admin can get list of posts (all posts or limited number?)
  */
-router.get('/posts', async (req, res) => {
+router.get('/', async (req, res) => {
     console.log(req.query);
     const {limit = 10, skip = 0} = req.query;
     try {
@@ -88,6 +94,7 @@ router.get('/posts', async (req, res) => {
         return res.json(posts);
     }
     catch(err) {
+      logger.error('get all posts', err)
         return res.status(500).json(err)
     }
 })
