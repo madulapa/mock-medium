@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www"
+    "start": "nodemon ./bin/www",
+    "starting": "LOGGER_LEVEL=debug nodemon ./bin/www"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -12,6 +13,8 @@
     "express-validator": "^6.6.0",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
+    "keycloak-admin": "^1.13.0",
+    "keycloak-connect": "^11.0.0",
     "log4js": "^6.3.0",
     "mongoose": "^5.9.25",
     "morgan": "^1.9.1",

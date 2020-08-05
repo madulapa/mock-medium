@@ -1,6 +1,4 @@
 const mongoose = require("mongoose") 
-const db = require('../db.js');
-
 let UserSchema = new mongoose.Schema({
     name: {
         type:String, 
@@ -12,8 +10,6 @@ let UserSchema = new mongoose.Schema({
         require: true, 
         unique: true
     }, 
-    //createdAt: new Date(),
-    //updatedAt: new Date(),
     createdBy: {
         type: String, 
         require:false
@@ -22,6 +18,6 @@ let UserSchema = new mongoose.Schema({
         type: String, 
         require:false
     }
-})
+}, {timestamps:true})
 
 module.exports = mongoose.model('User', UserSchema)

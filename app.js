@@ -2,18 +2,14 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+const { keycloak, session} = require('./kc.js');
+const { default: KeycloakAdminClient } = require("keycloak-admin");
 var log = require('morgan');
-var expressValidator = require('express-validator/check');
-
 var log4js = require("log4js");
 var logger = log4js.getLogger();
-logger.level = "debug";
-//log.debug("Some debug messages");
+logger.level = process.env.LOGGER_LEVEL; 
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var postRouter = require('./routes/post');
-
+const{admin: adminRouter, user:userRouter, post:postRouter} = require('./routes');
 var app = express();
 
 // view engine setup
@@ -25,11 +21,30 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-//app.use(expressValidator());
 
-app.use('/admin', indexRouter);
-app.use('/users', usersRouter);
-app.use('/post', postRouter);
+app.use(session);
+app.use(keycloak.middleware());
+
+app.use('/api/v1/admin', adminRouter);
+app.use('/api/v1/user', userRouter);
+app.use('/api/v1/post', postRouter);
+
+
+app.post('/login', (req,res)=> {
+  const {username, password} = req.body; 
+
+  return keycloak.grantManager.obtainDirectly(username,password).then(grant => {
+        keycloak.storeGrant(grant, req, res);
+      return res.json({access_token:grant.access_token.token})
+  }).catch(err => {
+    logger.error(err);
+    return res.status(500).json({error: 'error occured'});
+  })
+});
+
+app.use('/', (req, res) => {
+  res.json({status:"Mock-medium server is running"});
+})
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

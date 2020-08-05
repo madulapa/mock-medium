@@ -7,6 +7,9 @@
 var app = require('../app');
 var debug = require('debug')('mock-medium:server');
 var http = require('http');
+const mongoose = require("mongoose") ;
+const config = require('../config/in18/config.json');
+const logger = require('log4js').getLogger(); 
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +23,21 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+/**
+ * mongo connection
+ * start server when mongodb is conencted
+ */
+mongoose
+.connect(
+    config.DB.URL, 
+    config.DB.options
+)
+
+.then(() => {
+    console.log("mongoDB connected....")
+})
+.catch(err => logger.error("mongoDB connection error: ", err));
 
 /**
  * Listen on provided port, on all network interfaces.

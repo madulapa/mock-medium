@@ -1,5 +1,4 @@
 const mongoose = require("mongoose") 
-const db = require('../db.js');
 
 let PostSchema = new mongoose.Schema({
     title: {
@@ -11,8 +10,6 @@ let PostSchema = new mongoose.Schema({
         require: true, 
         unique: true
     },
-   // createdAt: new Date(),
-    //updatedAt: new Date(),
     createdBy: {
         type: String, 
         require:false
@@ -21,6 +18,6 @@ let PostSchema = new mongoose.Schema({
         type: String, 
         require:false
     }
-})
+}, {timestamps:true})
 
 module.exports = mongoose.model('Post', PostSchema)

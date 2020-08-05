@@ -1,0 +1,12 @@
+{
+    "realm": "mock-medium",
+    "auth-server-url": "http://localhost:8080/auth/",
+    "ssl-required": "external",
+    "resource": "mock-medium",
+    "verify-token-audience": true,
+    "credentials": {
+      "secret": "402026c7-561f-4773-add4-197f0e728bd1"
+    },
+    "use-resource-role-mappings": true,
+    "confidential-port": 0
+  }
