@@ -43,33 +43,53 @@ app.post('/api/v1/login', (req,res)=> {
   })
 });
 
+const adminClient = new KeycloakAdminClient(); 
+
 //user registration 
 app.post('/api/v1/register', async (req,res)=> {
-  this.adminClient = new KeycloakAdminClient(); 
   //this.adminClient = new kcAdminClient();
   const{username, email, role, password} = req.body; 
   //const user = await this.adminClient.users.find({username}); 
-  const user = await this.adminClient.users.create({
-      username: username, 
-      email: email,
-      password: password,
-      enabled:true
-    });
     try{
-      user = await this.adminClient.users.findOne({id: user.id});
+      await adminClient.auth({
+        username: 'admin',
+        password: 'admin',
+        grantType: 'password',
+        clientId: 'admin-cli',
+      });
+      const newUser = await adminClient.users.create({
+        username: username, 
+        email: email,
+        realmRoles:role,
+        enabled:true
+      });
+  
+      const user = await adminClient.users.findOne({id: newUser.id});
+      await adminClient.users.resetPassword({
+        id: user.id,
+        credential: {
+          temporary: false, 
+          type: 'password', 
+          value: password,
+        },
+      });
+
+      const roleName = await adminClient.roles.findOneByName({name: role});
+      await adminClient.users.addRealmRoleMappings({
+        id: user.id, 
+        roles:
+          {
+            id: roleName.id,
+            name: roleName.name,
+          },
+      });
+
+      return res.json(user);
     } catch(err){
-      return res.status(400).json(err,"error registering user")
+      logger.error(err);
+      return res.status(400).json();
     }
-    await this.adminClient.users.addClientRoleMappings({
-      id: user.id, 
-      clientUniqueId: "mock-medium",
-      roles: [
-        {
-          id:
-        }
-      ]
-    })
-    return res.status(201).json(user, "success")
+
 });
 
 app.get('/', (req, res) => {
