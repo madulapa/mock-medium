@@ -29,12 +29,13 @@ app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/post', postRouter);
 
-
-app.post('/login', (req,res)=> {
+//user login 
+app.post('/api/v1/login', (req,res)=> {
   const {username, password} = req.body; 
 
   return keycloak.grantManager.obtainDirectly(username,password).then(grant => {
-        keycloak.storeGrant(grant, req, res);
+    console.log(grant);
+        //keycloak.storeGrant(grant, req, res);
       return res.json({access_token:grant.access_token.token})
   }).catch(err => {
     logger.error(err);
@@ -42,9 +43,39 @@ app.post('/login', (req,res)=> {
   })
 });
 
-app.use('/', (req, res) => {
+//user registration 
+app.post('/api/v1/register', async (req,res)=> {
+  this.adminClient = new KeycloakAdminClient(); 
+  //this.adminClient = new kcAdminClient();
+  const{username, email, role, password} = req.body; 
+  //const user = await this.adminClient.users.find({username}); 
+  const user = await this.adminClient.users.create({
+      username: username, 
+      email: email,
+      password: password,
+      enabled:true
+    });
+    try{
+      user = await this.adminClient.users.findOne({id: user.id});
+    } catch(err){
+      return res.status(400).json(err,"error registering user")
+    }
+    await this.adminClient.users.addClientRoleMappings({
+      id: user.id, 
+      clientUniqueId: "mock-medium",
+      roles: [
+        {
+          id:
+        }
+      ]
+    })
+    return res.status(201).json(user, "success")
+});
+
+app.get('/', (req, res) => {
   res.json({status:"Mock-medium server is running"});
-})
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

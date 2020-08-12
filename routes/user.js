@@ -14,7 +14,7 @@ router.post('/',keycloak.protect("Admin"), body("name").exists(), body("email").
 
   if (!errors.isEmpty()) {
       logger.error('post user:', errors)
-    return res.status(422).json({ errors: errors.array() });;
+    return res.status(422).json({ errors: errors.array() });
   }
   const {name, email} = req.body;
     const user = new UserModel({
