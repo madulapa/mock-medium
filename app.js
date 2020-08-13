@@ -57,10 +57,13 @@ app.post('/api/v1/register', async (req,res)=> {
         grantType: 'password',
         clientId: 'admin-cli',
       });
+      adminClient.setConfig({
+        realmName: 'mock-medium',
+      });
       const newUser = await adminClient.users.create({
         username: username, 
         email: email,
-        realmRoles:role,
+        //realmRoles:role,
         enabled:true
       });
   
@@ -74,14 +77,19 @@ app.post('/api/v1/register', async (req,res)=> {
         },
       });
 
+        const roles = await adminClient.roles.find();
+        console.log(roles);
       const roleName = await adminClient.roles.findOneByName({name: role});
+      console.log(roleName);
       await adminClient.users.addRealmRoleMappings({
         id: user.id, 
         roles:
+        [
           {
             id: roleName.id,
             name: roleName.name,
           },
+        ],
       });
 
       return res.json(user);
