@@ -7,7 +7,7 @@ const router = express.Router();
 /**
  * User can make a post
  */
-router.post('/', keycloak.protect("User"), body("title").exists(), body("body").exists(), async (req, res) => {
+router.post('/', keycloak.protect("app_user"), body("title").exists(), body("body").exists(), async (req, res) => {
     
     const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
 
@@ -32,7 +32,7 @@ router.post('/', keycloak.protect("User"), body("title").exists(), body("body").
    /**
    * User can delete a post
    */
-  router.delete('/:id', keycloak.protect("User"), async (req, res) => {
+  router.delete('/:id', keycloak.protect("app_user"), async (req, res) => {
     let post = await getPostbyId(req.params.id)
     
     if(post == null)
@@ -49,7 +49,7 @@ router.post('/', keycloak.protect("User"), body("title").exists(), body("body").
    /**
    * User can update a post
    */
-  router.patch('/:id', keycloak.protect("User"), async (req, res) => {
+  router.patch('/:id', keycloak.protect("app_user"), async (req, res) => {
     let post = await getPostbyId(req.params.id)
     if(post == null)
         return res.status(400).json({error: "Post does not exist"});
@@ -71,7 +71,7 @@ router.post('/', keycloak.protect("User"), body("title").exists(), body("body").
    /**
    * User can see their feed (recent 10 posts)
    */
-  router.get('/feed', keycloak.protect("User"), async (req, res) => {
+  router.get('/feed', keycloak.protect("app_user"), async (req, res) => {
     const {limit = 3, skip = 0} = req.query;
     try {
         const posts = await PostModel.find({}).limit(limit).skip(skip);
@@ -85,7 +85,7 @@ router.post('/', keycloak.protect("User"), body("title").exists(), body("body").
   /**
  * admin can get list of posts (all posts or limited number?)
  */
-router.get('/', keycloak.protect("User"), async (req, res) => {
+router.get('/', keycloak.protect("app_user"), async (req, res) => {
     const {limit = 10, skip = 0} = req.query;
     try {
         const posts = await PostModel.find({}).limit(limit).skip(skip);

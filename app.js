@@ -48,7 +48,7 @@ const adminClient = new KeycloakAdminClient();
 //user registration 
 app.post('/api/v1/register', async (req,res)=> {
   //this.adminClient = new kcAdminClient();
-  const{username, email, role, password} = req.body; 
+  const{username, email, roleName, password} = req.body; 
   //const user = await this.adminClient.users.find({username}); 
     try{
       await adminClient.auth({
@@ -77,21 +77,29 @@ app.post('/api/v1/register', async (req,res)=> {
         },
       });
 
-        const roles = await adminClient.roles.find();
-        console.log(roles);
-      const roleName = await adminClient.roles.findOneByName({name: role});
-      console.log(roleName);
+      const role = await adminClient.roles.findOneByName({name: roleName});
       await adminClient.users.addRealmRoleMappings({
         id: user.id, 
         roles:
         [
           {
-            id: roleName.id,
-            name: roleName.name,
+            id: role.id,
+            name: role.name,
           },
         ],
       });
-
+      const clients = await adminClient.clients.find({});
+      //console.log(r)
+      await adminClient.users.addClientRoleMappings({
+        id: user.id,
+        clientUniqueId: 'f387830e-4aee-46a1-b66a-733403bccfb2',
+        roles: [
+          {
+            id: role.id,
+            name: role.name,
+          },
+        ],
+      });
       return res.json(user);
     } catch(err){
       logger.error(err);
