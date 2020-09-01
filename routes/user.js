@@ -1,14 +1,14 @@
 const {user: UserModel} = require('../models');
 const express = require('express');
-const {keycloak} = require('../kc.js');
+const keycloak = require('../kc.js').getInstance();
 const logger = require('log4js').getLogger(); 
-const { body, validationResult } = require('express-validator/check');
+const { body, validationResult } = require('express-validator');
 const router = express.Router();
 
 /**
  * create a user
  */
-router.post('/',keycloak.protect("app_admin"), body("name").exists(), body("email").isEmail(), async (req, res) => {
+router.post('/',keycloak.protect("admin"), body("name").exists(), body("email").isEmail(), async (req, res) => {
   logger.info('post user requst recieved');
   const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
 
@@ -32,7 +32,7 @@ router.post('/',keycloak.protect("app_admin"), body("name").exists(), body("emai
 /**
  * admin can get list of users
  */
-router.get('/',keycloak.protect("app_admin"), async (req, res) => {
+router.get('/',keycloak.protect("admin"), async (req, res) => {
   console.log(req.query);
   //limit:10,skip:10}
   const {limit = 10, skip = 0} = req.query;

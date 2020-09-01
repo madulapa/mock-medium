@@ -1,14 +1,14 @@
 const {admin: AdminModel} = require('../models');
 const logger = require('log4js').getLogger(); 
 const express = require('express');
-const {keycloak} = require('../kc.js');
-const { body, validationResult } = require('express-validator/check');
+const keycloak = require('../kc.js').getInstance();
+const { body, validationResult } = require('express-validator');
 const router = express.Router();
 
 /**
  * create an admin
  */
-router.post('/',keycloak.protect("app_admin"), body("name").exists(), body("email").exists(), async (req, res) => {
+router.post('/',keycloak.protect("admin"), body("name").exists(), body("email").exists(), async (req, res) => {
 
     const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
 
@@ -34,7 +34,7 @@ router.post('/',keycloak.protect("app_admin"), body("name").exists(), body("emai
 /**
  * admin can get list of admins(all or just limit?)
  */
-router.get('/', keycloak.protect("app_admin"), async (req, res) => {
+router.get('/', keycloak.protect("admin"), async (req, res) => {
     console.log(req.query);
     const {limit = 3, skip = 0} = req.query;
     try {

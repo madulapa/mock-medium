@@ -2,15 +2,21 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-const { keycloak, session} = require('./kc.js');
+//const { keycloak, session} = require('./kc.js').init();
 const { default: KeycloakAdminClient } = require("keycloak-admin");
 var log = require('morgan');
 var log4js = require("log4js");
 var logger = log4js.getLogger();
 logger.level = process.env.LOGGER_LEVEL; 
 
+const keycloak = require('./kc.js').init();
+
 const{admin: adminRouter, user:userRouter, post:postRouter} = require('./routes');
 var app = express();
+app.use((req, res, next) => {
+  req.headers.authorization = req.headers.authorization || '';
+  return next();
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,12 +28,36 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(session);
-app.use(keycloak.middleware());
+app.use(/\/((?!login|register).)*/, keycloak.middleware());
+
+//app.use(session);
+//app.use(keycloak.middleware());
 
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/post', postRouter);
+
+const adminClient = new KeycloakAdminClient(); 
+
+(async function () {
+  try {
+
+    let authRes = await adminClient.auth({
+      username: 'admin',
+      password: 'admin',
+      grantType: 'password',
+      clientId: 'admin-cli',
+    });
+
+    adminClient.setConfig({
+      realmName: 'mock-medium',
+    });
+
+    console.log('authRes', authRes);
+  } catch (e) {
+    console.log(e);
+  }
+})();
 
 //user login 
 app.post('/api/v1/login', (req,res)=> {
@@ -43,7 +73,7 @@ app.post('/api/v1/login', (req,res)=> {
   })
 });
 
-const adminClient = new KeycloakAdminClient(); 
+
 
 //user registration 
 app.post('/api/v1/register', async (req,res)=> {
@@ -51,7 +81,7 @@ app.post('/api/v1/register', async (req,res)=> {
   const{username, email, roleName, password} = req.body; 
   //const user = await this.adminClient.users.find({username}); 
     try{
-      await adminClient.auth({
+     /* await adminClient.auth({
         username: 'admin',
         password: 'admin',
         grantType: 'password',
@@ -60,10 +90,10 @@ app.post('/api/v1/register', async (req,res)=> {
       adminClient.setConfig({
         realmName: 'mock-medium',
       });
+      */
       const newUser = await adminClient.users.create({
         username: username, 
         email: email,
-        //realmRoles:role,
         enabled:true
       });
   
@@ -88,7 +118,7 @@ app.post('/api/v1/register', async (req,res)=> {
           },
         ],
       });
-      const clients = await adminClient.clients.find({});
+ /*     const clients = await adminClient.clients.find({});
       //console.log(r)
       await adminClient.users.addClientRoleMappings({
         id: user.id,
@@ -100,10 +130,11 @@ app.post('/api/v1/register', async (req,res)=> {
           },
         ],
       });
+      */
       return res.json(user);
     } catch(err){
       logger.error(err);
-      return res.status(400).json();
+      return res.status(400).json(err.response.data);
     }
 
 });
