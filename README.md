@@ -36,6 +36,7 @@ We can configure Keycloak using something other than roles, without changing the
     - Enable composite roles and add corresponding client role
 - Import the json file from your client to your program
     - Ex. 
+   ```json
         {
             "realm": "mock-medium",
             "auth-server-url": "http://localhost:8080/auth/",
@@ -50,4 +51,5 @@ We can configure Keycloak using something other than roles, without changing the
             "policy-enforcer": {},
             "bearerOnly": "true"
         }
+       ```
 - Run keycloak server with ./standalone.sh in the bin folder
