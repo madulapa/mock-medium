@@ -9,7 +9,7 @@ const router = express.Router();
  */
 router.post('/', keycloak.protect("user"), body("title").exists(), body("body").exists(), async (req, res) => {
     
-    const errors = validationResult(req); // Finds the validation errors in this request and wraps them in an object with handy functions
+    const errors = validationResult(req);
 
     if (!errors.isEmpty()) {
 
@@ -32,7 +32,7 @@ router.post('/', keycloak.protect("user"), body("title").exists(), body("body").
    /**
    * User can delete a post
    */
-  router.delete('/:id', keycloak.protect("user"), async (req, res) => {
+  router.delete('/:id', keycloak.protect("admin"), async (req, res) => {
     let post = await getPostbyId(req.params.id)
     
     if(post == null)
@@ -83,9 +83,9 @@ router.post('/', keycloak.protect("user"), body("title").exists(), body("body").
     }
   })
   /**
- * admin can get list of posts (all posts or limited number?)
+ * user can get list of posts 
  */
-router.get('/', keycloak.protect("user"), async (req, res) => {
+router.get('/', keycloak.protect("admin"), async (req, res) => {
     const {limit = 10, skip = 0} = req.query;
     try {
         const posts = await PostModel.find({}).limit(limit).skip(skip);

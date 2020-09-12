@@ -2,7 +2,6 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-//const { keycloak, session} = require('./kc.js').init();
 const { default: KeycloakAdminClient } = require("keycloak-admin");
 var log = require('morgan');
 var log4js = require("log4js");
@@ -18,7 +17,6 @@ app.use((req, res, next) => {
   return next();
 });
 
-// view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
@@ -29,9 +27,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(/\/((?!login|register).)*/, keycloak.middleware());
-
-//app.use(session);
-//app.use(keycloak.middleware());
 
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/user', userRouter);
@@ -65,7 +60,6 @@ app.post('/api/v1/login', (req,res)=> {
 
   return keycloak.grantManager.obtainDirectly(username,password).then(grant => {
     console.log(grant);
-        //keycloak.storeGrant(grant, req, res);
       return res.json({access_token:grant.access_token.token})
   }).catch(err => {
     logger.error(err);
@@ -77,20 +71,8 @@ app.post('/api/v1/login', (req,res)=> {
 
 //user registration 
 app.post('/api/v1/register', async (req,res)=> {
-  //this.adminClient = new kcAdminClient();
   const{username, email, roleName, password} = req.body; 
-  //const user = await this.adminClient.users.find({username}); 
     try{
-     /* await adminClient.auth({
-        username: 'admin',
-        password: 'admin',
-        grantType: 'password',
-        clientId: 'admin-cli',
-      });
-      adminClient.setConfig({
-        realmName: 'mock-medium',
-      });
-      */
       const newUser = await adminClient.users.create({
         username: username, 
         email: email,
@@ -118,19 +100,6 @@ app.post('/api/v1/register', async (req,res)=> {
           },
         ],
       });
- /*     const clients = await adminClient.clients.find({});
-      //console.log(r)
-      await adminClient.users.addClientRoleMappings({
-        id: user.id,
-        clientUniqueId: 'f387830e-4aee-46a1-b66a-733403bccfb2',
-        roles: [
-          {
-            id: role.id,
-            name: role.name,
-          },
-        ],
-      });
-      */
       return res.json(user);
     } catch(err){
       logger.error(err);

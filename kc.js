@@ -1,23 +1,9 @@
 const Keycloak = require('keycloak-connect')
 const session = require('express-session')
-//var memoryStore = new session.MemoryStore();
 
 let _keycloakInstance;
 
 let kc = {};
-
-
-/*  kc.session = session({
-    secret: 'some secret',
-    resave: false,
-    saveUninitialized: true,
-    store: memoryStore
-  });
-
-  kc.keycloak = new Keycloak({
-    store: memoryStore
-  });
-*/
 
   kc.getInstance = function () {
     if (!_keycloakInstance) {
