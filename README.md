@@ -9,7 +9,7 @@ based on permissions that are configured using Keycloak.
 The  user role has register and login functionalities. Users can create posts, update posts, retrieve their "feed", the most recent 10 posts.
 
 ## Admins
-The  admin role has register and login functionalities. Admins can delete any post and access all posts made. 
+The  admin role has register and login functionalities. Admins can delete any post and access all posts made. For the purpose of this implementation delete is only for the admin, but it should also be defined for the user role. 
 
 ## Posts
 Posts are created and updated by users, deleted by admins, and accessed by both roles.
