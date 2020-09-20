@@ -17,9 +17,6 @@ app.use((req, res, next) => {
   return next();
 });
 
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
 app.use(log('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -52,61 +49,7 @@ const adminClient = new KeycloakAdminClient();
   } catch (e) {
     console.log(e);
   }
-})();
-
-//user login 
-app.post('/api/v1/login', (req,res)=> {
-  const {username, password} = req.body; 
-
-  return keycloak.grantManager.obtainDirectly(username,password).then(grant => {
-    console.log(grant);
-      return res.json({access_token:grant.access_token.token})
-  }).catch(err => {
-    logger.error(err);
-    return res.status(500).json({error: 'error occured'});
-  })
-});
-
-
-
-//user registration 
-app.post('/api/v1/register', async (req,res)=> {
-  const{username, email, roleName, password} = req.body; 
-    try{
-      const newUser = await adminClient.users.create({
-        username: username, 
-        email: email,
-        enabled:true
-      });
-  
-      const user = await adminClient.users.findOne({id: newUser.id});
-      await adminClient.users.resetPassword({
-        id: user.id,
-        credential: {
-          temporary: false, 
-          type: 'password', 
-          value: password,
-        },
-      });
-
-      const role = await adminClient.roles.findOneByName({name: roleName});
-      await adminClient.users.addRealmRoleMappings({
-        id: user.id, 
-        roles:
-        [
-          {
-            id: role.id,
-            name: role.name,
-          },
-        ],
-      });
-      return res.json(user);
-    } catch(err){
-      logger.error(err);
-      return res.status(400).json(err.response.data);
-    }
-
-});
+})()
 
 app.get('/', (req, res) => {
   res.json({status:"Mock-medium server is running"});
