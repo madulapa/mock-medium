@@ -1,14 +1,14 @@
 {
-    "realm": "mock-medium",
-    "auth-server-url": "http://localhost:8080/auth/",
-    "ssl-required": "external",
-    "resource": "nodejs-microservice",
-    "verify-token-audience": true,
-    "credentials": {
-      "secret": "7105348b-0059-474e-8b14-cd6a44ea4587"
-    },
-    "use-resource-role-mappings": true,
-    "confidential-port": 0,
-    "policy-enforcer": {},
-    "bearerOnly": "true"
+  "realm": "mock-medium",
+  "auth-server-url": "http://localhost:8080/auth/",
+  "ssl-required": "external",
+  "resource": "nodejs-microservice",
+  "verify-token-audience": false,
+  "credentials": {
+    "secret": "1750dd02-86b8-4fe6-9632-81783374eb0b"
+  },
+  "use-resource-role-mappings": true,
+  "confidential-port": 0,
+  "policy-enforcer": {},
+  "bearerOnly": "true"
 }

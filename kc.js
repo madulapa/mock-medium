@@ -5,7 +5,7 @@ let _keycloakInstance;
 
 let kc = {};
 
-  kc.getInstance = function () {
+kc.getInstance = function () {
     if (!_keycloakInstance) {
         throw 'keycloak not initialized';
     }
@@ -27,4 +27,4 @@ kc.init = function () {
     return _keycloakInstance;
 }
 
-  module.exports = kc;
+module.exports = kc;
