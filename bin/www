@@ -8,7 +8,7 @@ var app = require('../app');
 var debug = require('debug')('mock-medium:server');
 var http = require('http');
 const mongoose = require("mongoose") ;
-const config = require('../config/in18/config.json');
+const config = require('../config/config.json');
 const logger = require('log4js').getLogger(); 
 
 /**

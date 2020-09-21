@@ -3,12 +3,32 @@ const express = require('express');
 const keycloak = require('../kc.js').getInstance();
 const logger = require('log4js').getLogger(); 
 const { body, validationResult } = require('express-validator');
+const { default: KeycloakAdminClient } = require("keycloak-admin");
 const router = express.Router();
 
+const adminClient = new KeycloakAdminClient(); 
+(async function () {
+  try {
 
+    let authRes = await adminClient.auth({
+      username: 'admin',
+      password: 'admin',
+      grantType: 'password',
+      clientId: 'admin-cli',
+    });
+
+    adminClient.setConfig({
+      realmName: 'mock-medium',
+    });
+
+    console.log('authRes', authRes);
+  } catch (e) {
+    console.log(e);
+  }
+})()
 
 //user login 
-app.post('/login', (req,res)=> {
+router.post('/login', (req,res)=> {
   const {username, password} = req.body; 
 
   return keycloak.grantManager.obtainDirectly(username,password).then(grant => {
@@ -21,7 +41,7 @@ app.post('/login', (req,res)=> {
 });
 
 //user registration 
-app.post('/register', async (req,res)=> {
+router.post('/register', async (req,res)=> {
   const{username, email, roleName, password} = req.body; 
     try{
       const newUser = await adminClient.users.create({

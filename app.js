@@ -2,7 +2,6 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
-const { default: KeycloakAdminClient } = require("keycloak-admin");
 var log = require('morgan');
 var log4js = require("log4js");
 var logger = log4js.getLogger();
@@ -10,7 +9,7 @@ logger.level = process.env.LOGGER_LEVEL;
 
 const keycloak = require('./kc.js').init();
 
-const{admin: adminRouter, user:userRouter, post:postRouter} = require('./routes');
+const{user:userRouter, post:postRouter} = require('./routes');
 var app = express();
 app.use((req, res, next) => {
   req.headers.authorization = req.headers.authorization || '';
@@ -25,31 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(/\/((?!login|register).)*/, keycloak.middleware());
 
-app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/post', postRouter);
 
-const adminClient = new KeycloakAdminClient(); 
-
-(async function () {
-  try {
-
-    let authRes = await adminClient.auth({
-      username: 'admin',
-      password: 'admin',
-      grantType: 'password',
-      clientId: 'admin-cli',
-    });
-
-    adminClient.setConfig({
-      realmName: 'mock-medium',
-    });
-
-    console.log('authRes', authRes);
-  } catch (e) {
-    console.log(e);
-  }
-})()
 
 app.get('/', (req, res) => {
   res.json({status:"Mock-medium server is running"});
