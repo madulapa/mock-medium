@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# keycloak-nodejs-example
-=======
 # keycloak-nodejs-configuration
->>>>>>> 26de069c471c075008d1c30f2ae1396d7a17f27b
 
 This is a Node.js REST application with checking permissions using keycloak.
 
@@ -13,11 +9,7 @@ based on permissions that are configured using Keycloak.
 The  user role has register and login functionalities. Users can create posts, update posts, retrieve their "feed", the most recent 10 posts.
 
 ## Admins
-<<<<<<< HEAD
-The  admin role has register and login functionalities. Admins can delete any post and access all posts made. 
-=======
 The  admin role has register and login functionalities. Admins can delete any post and access all posts made. For the purpose of this implementation delete is only for the admin, but it should also be defined for the user role. 
->>>>>>> 26de069c471c075008d1c30f2ae1396d7a17f27b
 
 ## Posts
 Posts are created and updated by users, deleted by admins, and accessed by both roles.
@@ -42,7 +34,6 @@ We can configure Keycloak using something other than roles, without changing the
 
 - Create roles within the realm (app_admin, app_user)
     - Enable composite roles and add corresponding client role
-<<<<<<< HEAD
 
 
 ### Import Users, Realm, Client and Polices
@@ -405,24 +396,3 @@ https://stackoverflow.com/questions/12276046/nodejs-express-how-to-secure-a-url
 
 Keycloak uses _JSON web token (JWT)_ as a bearer token format. To decode such tokens: https://jwt.io/
 
-=======
-- Import the json file from your client to your program
-    - Ex. 
-   ```json
-        {
-            "realm": "mock-medium",
-            "auth-server-url": "http://localhost:8080/auth/",
-            "ssl-required": "external",
-            "resource": "nodejs-microservice",
-            "verify-token-audience": true,
-            "credentials": {
-            "secret": "7105348b-0059-474e-8b14-cd6a44ea4587"
-            },
-            "use-resource-role-mappings": true,
-            "confidential-port": 0,
-            "policy-enforcer": {},
-            "bearerOnly": "true"
-        }
-       ```
-- Run keycloak server with ./standalone.sh in the bin folder
->>>>>>> 26de069c471c075008d1c30f2ae1396d7a17f27b
