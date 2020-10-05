@@ -1,12 +1,22 @@
 {
-    "DB" : {
-        "URL" : "mongodb+srv://mock-medium-user:mock-medium-pass@mock-medium.8ffwm.mongodb.net/mock-medium?retryWrites=true&w=majority",
-        "options" : {
-            "useNewUrlParser": true,
-            "useUnifiedTopology": true
-        }
-    },
-    "app": {
-        "PORT": 3000
+  "DB": {
+    "URL": "mongodb+srv://mock-medium-user:mock-medium-pass@mock-medium.8ffwm.mongodb.net/mock-medium?retryWrites=true&w=majority",
+    "options": {
+      "useNewUrlParser": true,
+      "useUnifiedTopology": true
     }
+  },
+  "app": {
+    "PORT": 3000
+  },
+  "keycloak": {
+    "admin": {
+      "username": "admin",
+      "password": "admin",
+      "grantType": "password",
+      "clientId": "admin-cli"
+    },
+    "adminRefresh": 58,
+    "adminUrl": "http://localhost:8080/realms/master/protocol/openid-connect/token"
+  }
 }

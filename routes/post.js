@@ -4,99 +4,105 @@ const keycloak = require('../kc.js').getInstance();
 const logger = require('log4js').getLogger();
 const { body, validationResult } = require('express-validator');
 const router = express.Router();
+
 /**
  * User can make a post
  */
 router.post('/', keycloak.protect("user"), body("title").exists(), body("body").exists(), async (req, res) => {
+    const errors = validationResult(req);
 
-  const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        logger.error('post post:', errors)
+        return res.status(422).json({ errors: errors.array() });;
+    }
 
-  if (!errors.isEmpty()) {
+    const { title, body } = req.body;
+    const post = new PostModel({
+        title,
+        body
+    })
 
-    logger.error('post post:', errors)
-    return res.status(422).json({ errors: errors.array() });;
-  }
-  const { title, body } = req.body;
-  const post = new PostModel({
-    title,
-    body
-  })
-  try {
-    const newPost = await post.save()
-    return res.status(201).json(newPost)
-  }
-  catch (err) {
-    return res.status(400).json(err)
-  }
-})
+    try {
+        const newPost = await post.save()
+        return res.status(201).json(newPost)
+    } catch (err) {
+        return res.status(400).json(err)
+    }
+});
+
 /**
-* User can delete a post
+* admin can delete a post
 */
 router.delete('/:id', keycloak.protect("admin"), async (req, res) => {
-  let post = await getPostbyId(req.params.id)
+    let post = await getPostbyId(req.params.id)
 
-  if (post == null)
-    return res.status(400).json({ error: "Post does not exist" });
-  try {
-    await post.remove()
-    return res.json({ message: "successfully deleted post" })
-  }
-  catch (err) {
-    logger.error('delete post', err)
-    return res.status(500).json(err)
-  }
-})
+    if (post == null)
+        return res.status(400).json({ error: "Post does not exist" });
+    try {
+        await post.remove()
+        return res.json({ message: "successfully deleted post" })
+    }
+    catch (err) {
+        logger.error('delete post', err)
+        return res.status(500).json(err)
+    }
+});
+
 /**
 * User can update a post
 */
 router.patch('/:id', keycloak.protect("user"), async (req, res) => {
-  let post = await getPostbyId(req.params.id)
-  if (post == null)
-    return res.status(400).json({ error: "Post does not exist" });
-  if (post.title != null) {
-    post.title = req.body.title
-  }
-  if (post.body != null) {
-    post.body = req.body.body
-  }
-  try {
-    const updatedPost = await post.save()
-    return res.json(updatedPost)
-  }
-  catch (err) {
-    logger.error('patch post', err)
-    return res.status(400).json(err)
-  }
-})
+    let post = await getPostbyId(req.params.id)
+    if (post == null)
+        return res.status(400).json({ error: "Post does not exist" });
+    if (post.title != null) {
+        post.title = req.body.title
+    }
+    if (post.body != null) {
+        post.body = req.body.body
+    }
+    try {
+        const updatedPost = await post.save()
+        return res.json(updatedPost)
+    }
+    catch (err) {
+        logger.error('patch post', err)
+        return res.status(400).json(err)
+    }
+});
+
 /**
 * User can see their feed (recent 10 posts)
 */
 router.get('/feed', keycloak.protect("user"), async (req, res) => {
-  const { limit = 3, skip = 0 } = req.query;
-  try {
-    const posts = await PostModel.find({}).limit(limit).skip(skip);
-    return res.json(posts);
-  }
-  catch (err) {
-    logger.error('get feed', err)
-    return res.status(500).json(err)
-  }
-})
+    const { limit = 3, skip = 0 } = req.query;
+    try {
+        const posts = await PostModel.find({}).limit(limit).skip(skip);
+        return res.json(posts);
+    }
+    catch (err) {
+        logger.error('get feed', err)
+        return res.status(500).json(err)
+    }
+});
+
 /**
-* user can get list of posts 
+* admin can get list of posts 
 */
 router.get('/', keycloak.protect("admin"), async (req, res) => {
-  const { limit = 10, skip = 0 } = req.query;
-  try {
-    const posts = await PostModel.find({}).limit(limit).skip(skip);
-    return res.json(posts);
-  }
-  catch (err) {
-    logger.error('get all posts', err)
-    return res.status(500).json(err)
-  }
-})
+    const { limit = 10, skip = 0 } = req.query;
+    try {
+        const posts = await PostModel.find({}).limit(limit).skip(skip);
+        return res.json(posts);
+    }
+    catch (err) {
+        logger.error('get all posts', err)
+        return res.status(500).json(err)
+    }
+});
+
 async function getPostbyId(id) {
-  return await PostModel.findById(id)
+    return await PostModel.findById(id)
 }
+
 module.exports = router;

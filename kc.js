@@ -13,6 +13,8 @@ kc.getInstance = function () {
     return _keycloakInstance;
 }
 
+kc.store = new session.MemoryStore();
+
 kc.init = function () {
     if (_keycloakInstance) {
         return _keycloakInstance;
@@ -21,7 +23,7 @@ kc.init = function () {
     console.log('keycloak initializing');
 
     _keycloakInstance = new Keycloak({
-        store: new session.MemoryStore()
+        store: kc.store
     });
 
     return _keycloakInstance;

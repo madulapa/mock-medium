@@ -10,5 +10,5 @@
   "use-resource-role-mappings": true,
   "confidential-port": 0,
   "policy-enforcer": {},
-  "bearerOnly": "true"
+  "bearerOnly": "false"
 }
